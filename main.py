@@ -1,13 +1,14 @@
 import json
 import numpy as np
 from fastapi import FastAPI, UploadFile, File
-import tflite_runtime.interpreter as tflite
+import ai_edge_litert.interpreter as litert
 from PIL import Image
 import io
 
 app = FastAPI()
 
-interpreter = tflite.Interpreter(model_path="plant_disease_model.tflite")
+# استفاده از مفسر جدید گوگل برای حل ارور FULLY_CONNECTED
+interpreter = litert.Interpreter(model_path="plant_disease_model.tflite")
 interpreter.allocate_tensors()
 
 input_details = interpreter.get_input_details()
@@ -46,12 +47,8 @@ async def predict(file: UploadFile = File(...)):
     output_data = interpreter.get_tensor(output_details[0]['index'])
     
     if len(output_data.shape) > 1:
-        if output_data.shape[0] == 8:
-            predicted_index = np.argmax(output_data[0])
-            confidence = float(np.max(output_data[0])) * 100
-        else:
-            predicted_index = np.argmax(output_data[0])
-            confidence = float(np.max(output_data[0])) * 100
+        predicted_index = np.argmax(output_data[0])
+        confidence = float(np.max(output_data[0])) * 100
     else:
         predicted_index = np.argmax(output_data)
         confidence = float(np.max(output_data)) * 100
@@ -67,4 +64,4 @@ async def predict(file: UploadFile = File(...)):
 
 @app.get("/")
 def read_root():
-    return {"status": "Server is running successfully with MobileNetV2!"}
+    return {"status": "Server is running successfully with LiteRT!"}
