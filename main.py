@@ -14,7 +14,7 @@ interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 
-with open("disease_data.json", "r", encoding="utf-8") as f:
+with open("disease_info.json", "r", encoding="utf-8") as f:
     disease_info = json.load(f)
 
 CLASS_NAMES = [
